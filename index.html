@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <title>Калькулятор</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+<body>
+<script>
+    "use strict"
+
+    function set_response(title, text, target_class) {
+        document.getElementById('response_alert').className = target_class
+        document.getElementById('response_title').textContent = title
+        document.getElementById('response_text').textContent = text
+    }
+
+    function calculate(sd_2type, hads_a) {
+        let z = 2.566 - 1.828 * sd_2type - 0.141 * hads_a
+        return 1 / (1 + Math.pow(Math.E, -z)) * 100
+    }
+
+    function process() {
+        let form = document.forms['input'],
+            hads_a = 0
+        try {
+            hads_a = Number(form['hads_a'].value)
+        } catch (e) {}
+
+        if (!(hads_a >= 0 && hads_a <= 21)) {
+            set_response('', '', '') // Это сотрёт со страницы результат предыдущих вычислений
+            return // Код ниже не выполняется, если хотя бы одно из полей пустое
+        }
+
+        let p = calculate(
+            Number(document.querySelector('input[name="SDRadios"]:checked').value),
+            hads_a
+        )
+
+        let info = '',
+            alert_class = "alert alert-success"
+
+        if (p >= 64.3) {
+            info = 'Низкий риск'
+        } else {
+            info = 'Высокий риск'
+            alert_class = "alert alert-danger"
+        }
+        set_response(info, `Вероятность персистирования симпатикотонии ${Math.round((100 - p) * 10) / 10}%`, alert_class)
+    }
+</script>
+<div class="container col-md-12">
+    <h5 class="text-center">Прогнозирование риска персистирования симпатикотонии у пациентов с психовегетативным
+        синдромом после стентирования в период активного врачебного наблюдения амбулаторно-поликлинического этапа
+        реабилитации</h5>
+    <form id="input" onsubmit="return false">
+        <div class="form-group">
+            <label>Сахарный диабет 2 типа</label>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="SDRadios" id="sd_1" value="0" checked>
+                <label class="form-check-label" for="sd_1">Отсутствие</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="SDRadios" id="sd_2" value="1">
+                <label class="form-check-label" for="sd_2">Наличие</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="hads_a">HADS-A на момент окончания стационарного этапа реабилитации</label>
+            <input required type="number" class="form-control" id="hads_a" placeholder="Баллов (0-21)" min="0" max="21">
+        </div>
+        <button type="submit" class="btn btn-primary btn-block"
+                onclick="try{ process() } catch(e) {set_response('Ошибка', e, 'alert alert-danger')}">Рассчитать
+        </button>
+    </form>
+    <br>
+    <div role="alert" id="response_alert">
+        <h5 class="alert-heading" id="response_title"></h5>
+        <p id="response_text"></p>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+</body>
+</html>
